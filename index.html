@@ -193,83 +193,73 @@
   </div>
 
   <script>
-    // Google Apps Script 웹 앱 URL (Step 1에서 복사한 URL)
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwnJBbp45WRcRamDKfSozzh6Dg3Z2oPcFIZxcrsUf_XUkrhYjT0pm7YeBsyS60sapcmw/exec';
-
+    
     document.getElementById('simpleForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-
+    
       const name = document.getElementById('name').value.trim();
       const phone = document.getElementById('phone').value.trim();
       const consent = document.getElementById('consent').checked;
       
       const submitBtn = document.getElementById('submitBtn');
       const errorMessage = document.getElementById('errorMessage');
-
-      // 에러 메시지 초기화
+    
       errorMessage.style.display = 'none';
-
+    
       // 유효성 검사
       if (!name) {
         showError('이름을 입력해주세요.');
         return;
       }
-      
       if (!phone) {
         showError('연락처를 입력해주세요.');
         return;
       }
-      
       if (!consent) {
         showError('개인정보 수집·이용에 동의해주세요.');
         return;
       }
-
-      // 전화번호 형식 간단 검증
+    
       const phoneRegex = /^[0-9-+\s()]{10,15}$/;
       if (!phoneRegex.test(phone)) {
         showError('올바른 전화번호 형식을 입력해주세요.');
         return;
       }
-
-      // 로딩 상태
+    
       submitBtn.disabled = true;
       submitBtn.textContent = '접수 중...';
-
+    
       try {
-        const response = await fetch(SCRIPT_URL, {
+        // ✅ FormData 방식으로 변경 (CORS 문제 완전 해결)
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('phone', phone);
+        formData.append('consent', consent ? 'true' : 'false');
+    
+        await fetch(SCRIPT_URL, {
           method: 'POST',
-          mode: 'no-cors', // CORS 이슈 해결
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: name,
-            phone: phone,
-            consent: consent.toString(),
-            timestamp: new Date().toISOString()
-          })
+          body: formData,      // JSON 대신 FormData 사용
+          mode: 'no-cors'      // headers 제거
         });
-
-        // no-cors 모드에서는 응답을 확인할 수 없으므로 성공으로 간주
+    
         showSuccessScreen();
-
+    
       } catch (error) {
         console.error('제출 오류:', error);
         showError('접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
         
-        // 버튼 상태 복구
         submitBtn.disabled = false;
         submitBtn.textContent = '접수하기';
       }
     });
-
+    
     function showError(message) {
       const errorMessage = document.getElementById('errorMessage');
       errorMessage.textContent = message;
       errorMessage.style.display = 'block';
     }
-
+    
     function showSuccessScreen() {
       document.getElementById('formScreen').style.display = 'none';
       document.getElementById('successScreen').style.display = 'block';
