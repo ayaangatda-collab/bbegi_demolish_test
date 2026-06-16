@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>철거·원상복구 간편 접수</title>
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background-color: #ffffff;
+      color: #1a1a1a;
+      padding: 24px 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #00c896; /* 빼기 브랜드 컬러 */
+      margin-bottom: 8px;
+    }
+    
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="tel"] {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus {
+      border-color: #00c896;
+    }
+    
+    .privacy-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 32px;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+    
+    .privacy-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 16px;
+      background-color: #00c896;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .submit-btn:hover {
+      background-color: #00b085;
+    }
+    
+    .submit-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding-top: 60px;
+    }
+    
+    .success-screen .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    
+    .success-screen h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #00c896;
+    }
+    
+    .success-screen p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+    
+    .error-message {
+      color: #e74c3c;
+      font-size: 13px;
+      margin-top: 8px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 접수 폼 화면 -->
+  <div id="formScreen" class="container">
+    <div class="logo">빼기</div>
+    <h1 class="title">철거·원상복구<br>간편 접수</h1>
+    <p class="subtitle">
+      이름과 연락처만 남겨주시면<br>
+      빼기 전담 매니저가 직접 연락드려<br>
+      최적의 업체를 연결해드립니다.
+    </p>
+
+    <form id="simpleForm">
+      <div class="form-group">
+        <label for="name">이름 *</label>
+        <input type="text" id="name" name="name" placeholder="이름을 입력해주세요" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">연락처 *</label>
+        <input type="tel" id="phone" name="phone" placeholder="010-0000-0000" required>
+      </div>
+
+      <div class="privacy-group">
+        <input type="checkbox" id="consent" name="consent" required>
+        <label for="consent">
+          <strong>(필수)</strong> 개인정보 수집·이용에 동의합니다.<br>
+          수집 항목: 이름, 연락처 / 목적: 철거·원상복구 서비스 상담
+        </label>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        접수하기
+      </button>
+      
+      <div class="error-message" id="errorMessage"></div>
+    </form>
+  </div>
+
+  <!-- 접수 완료 화면 -->
+  <div class="success-screen" id="successScreen">
+    <div class="icon">✅</div>
+    <h2>접수가 완료되었습니다!</h2>
+    <p>
+      빼기 전담 매니저가<br>
+      영업일 기준 1~2일 내에 연락드려<br>
+      최적의 업체를 직접 연결해드릴게요 😊
+    </p>
+  </div>
+
+  <script>
+    // Google Apps Script 웹 앱 URL (Step 1에서 복사한 URL)
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwnJBbp45WRcRamDKfSozzh6Dg3Z2oPcFIZxcrsUf_XUkrhYjT0pm7YeBsyS60sapcmw/exec';
+
+    document.getElementById('simpleForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const consent = document.getElementById('consent').checked;
+      
+      const submitBtn = document.getElementById('submitBtn');
+      const errorMessage = document.getElementById('errorMessage');
+
+      // 에러 메시지 초기화
+      errorMessage.style.display = 'none';
+
+      // 유효성 검사
+      if (!name) {
+        showError('이름을 입력해주세요.');
+        return;
+      }
+      
+      if (!phone) {
+        showError('연락처를 입력해주세요.');
+        return;
+      }
+      
+      if (!consent) {
+        showError('개인정보 수집·이용에 동의해주세요.');
+        return;
+      }
+
+      // 전화번호 형식 간단 검증
+      const phoneRegex = /^[0-9-+\s()]{10,15}$/;
+      if (!phoneRegex.test(phone)) {
+        showError('올바른 전화번호 형식을 입력해주세요.');
+        return;
+      }
+
+      // 로딩 상태
+      submitBtn.disabled = true;
+      submitBtn.textContent = '접수 중...';
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors', // CORS 이슈 해결
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: name,
+            phone: phone,
+            consent: consent.toString(),
+            timestamp: new Date().toISOString()
+          })
+        });
+
+        // no-cors 모드에서는 응답을 확인할 수 없으므로 성공으로 간주
+        showSuccessScreen();
+
+      } catch (error) {
+        console.error('제출 오류:', error);
+        showError('접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        
+        // 버튼 상태 복구
+        submitBtn.disabled = false;
+        submitBtn.textContent = '접수하기';
+      }
+    });
+
+    function showError(message) {
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+    }
+
+    function showSuccessScreen() {
+      document.getElementById('formScreen').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
