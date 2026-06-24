@@ -5,29 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>철거·원상복구 간편 접수</title>
   <style>
-    /* 🎨 빼기 브랜드 컬러 시스템 (Design Tokens) */
     :root {
-      /* Primary Blue Palette */
-      --blue-01: #1F41FF; /* Primary Main */
-      --blue-02: #304FFB; /* Primary Hover */
-      --blue-03: #5980F9; /* Focus Border */
-      --blue-04: #8fb5ff; /* Secondary */
-      --blue-05: #E6F0FF; /* Focus Background */
-      --blue-06: #F4F9FF; /* Page Background */
+      --blue-01: #1F41FF;
+      --blue-02: #304FFB;
+      --blue-03: #5980F9;
+      --blue-04: #8fb5ff;
+      --blue-05: #E6F0FF;
+      --blue-06: #F4F9FF;
       
-      /* Text & Neutral Colors */
-      --gray-900: #1a1a1a; /* Primary Text */
-      --gray-800: #333333; /* Label Text */
-      --gray-600: #666666; /* Secondary Text */
-      --gray-400: #999999; /* Placeholder */
-      --gray-300: #e0e0e0; /* Border */
+      --gray-900: #1a1a1a;
+      --gray-800: #333333;
+      --gray-600: #666666;
+      --gray-400: #999999;
+      --gray-300: #e0e0e0;
       --white: #ffffff;
       
-      /* Status Colors */
       --error: #e74c3c;
       --success: #00c896;
       
-      /* Design System */
       --radius: 8px;
       --shadow: 0 2px 8px rgba(31, 65, 255, 0.08);
     }
@@ -76,22 +71,85 @@
     .subtitle {
       font-size: 15px;
       color: var(--gray-600);
-      margin-bottom: 36px;
+      margin-bottom: 32px;
       line-height: 1.6;
       letter-spacing: -0.2px;
+    }
+
+    /* ✅ 서비스 지역 안내 뱃지 */
+    .service-area-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      padding: 14px 16px;
+      background: var(--blue-06);
+      border-radius: var(--radius);
+      border: 1px solid var(--blue-05);
+    }
+
+    .service-area-badge .badge-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .service-area-badge .badge-text {
+      font-size: 13px;
+      color: var(--blue-02);
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      line-height: 1.4;
     }
     
     .form-group {
       margin-bottom: 24px;
     }
     
-    .form-group label {
+    .form-group .group-label {
       display: block;
       font-size: 14px;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       color: var(--gray-800);
       letter-spacing: -0.2px;
+    }
+    
+    .region-group {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .region-input {
+      display: none;
+    }
+    
+    .region-label {
+      flex: 1;
+      text-align: center;
+      padding: 16px 12px;
+      background: var(--white);
+      border: 1.5px solid var(--gray-300);
+      border-radius: var(--radius);
+      color: var(--gray-600);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: -0.2px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .region-input:checked + .region-label {
+      background: var(--blue-05);
+      border-color: var(--blue-01);
+      color: var(--blue-01);
+      transform: scale(1.02);
+      box-shadow: 0 2px 8px rgba(31, 65, 255, 0.15);
+    }
+
+    .region-label:hover {
+      border-color: var(--blue-03);
     }
     
     .form-group input[type="text"],
@@ -238,6 +296,11 @@
       .title {
         font-size: 20px;
       }
+
+      .region-label {
+        padding: 14px 8px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
@@ -252,22 +315,46 @@
       최적의 업체를 연결해드립니다.
     </p>
 
+
+    <div class="service-area-badge">
+      <span class="badge-icon">📍</span>
+      <div class="badge-text">
+        현재 서비스 지역: 서울 · 경기 · 인천<br>
+        <span style="font-weight: 400; font-size: 12px; opacity: 0.8;">수도권 외 지역은 서비스 준비 중입니다</span>
+      </div>
+    </div>
+
     <form id="simpleForm">
+
       <div class="form-group">
-        <label for="name">이름</label>
+        <label class="group-label" for="name">이름</label>
         <input type="text" id="name" name="name" placeholder="이름을 입력해주세요" required>
       </div>
 
       <div class="form-group">
-        <label for="phone">연락처</label>
+        <label class="group-label" for="phone">연락처</label>
         <input type="tel" id="phone" name="phone" placeholder="010-0000-0000" required>
+
+      </div>
+      <div class="form-group">
+        <label class="group-label">철거 지역</label>
+        <div class="region-group">
+          <input type="radio" id="region-seoul" name="region" value="서울" class="region-input" required>
+          <label for="region-seoul" class="region-label">서울</label>
+
+          <input type="radio" id="region-gyeonggi" name="region" value="경기" class="region-input">
+          <label for="region-gyeonggi" class="region-label">경기</label>
+
+          <input type="radio" id="region-incheon" name="region" value="인천" class="region-input">
+          <label for="region-incheon" class="region-label">인천</label>
+        </div>
       </div>
 
       <div class="privacy-group">
         <input type="checkbox" id="consent" name="consent" required>
         <label for="consent">
           <strong>[필수]</strong> 개인정보 수집·이용 동의<br>
-          <span style="font-size: 13px; opacity: 0.8;">수집 항목: 이름, 연락처 / 목적: 서비스 상담</span>
+          <span style="font-size: 13px; opacity: 0.8;">수집 항목: 이름, 연락처, 지역 / 목적: 서비스 상담</span>
         </label>
       </div>
 
@@ -291,58 +378,74 @@
   </div>
 
   <script>
+    // 🔒 기존 성공한 Apps Script URL 완전 보존
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwnJBbp45WRcRamDKfSozzh6Dg3Z2oPcFIZxcrsUf_XUkrhYjT0pm7YeBsyS60sapcmw/exec';
-    
+
     document.getElementById('simpleForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-    
+
+      // ✅ 선택된 지역 값 가져오기
+      const regionInput = document.querySelector('input[name="region"]:checked');
+      const region = regionInput ? regionInput.value : '';
       const name = document.getElementById('name').value.trim();
       const phone = document.getElementById('phone').value.trim();
       const consent = document.getElementById('consent').checked;
       
       const submitBtn = document.getElementById('submitBtn');
       const errorMessage = document.getElementById('errorMessage');
-    
+
       errorMessage.style.display = 'none';
-    
+
       // 유효성 검사
+      if (!region) {
+        showError('철거 지역을 선택해주세요.');
+        return;
+      }
+      
       if (!name) {
         showError('이름을 입력해주세요.');
         return;
       }
+      
       if (!phone) {
         showError('연락처를 입력해주세요.');
         return;
       }
+      
       if (!consent) {
         showError('개인정보 수집·이용에 동의해주세요.');
         return;
       }
-    
+
       const phoneRegex = /^[0-9-+\s()]{10,15}$/;
       if (!phoneRegex.test(phone)) {
         showError('올바른 전화번호 형식을 입력해주세요.');
         return;
       }
-    
+
+      // 로딩 상태
       submitBtn.disabled = true;
       submitBtn.textContent = '접수 중...';
-    
+
       try {
-        // ✅ FormData 방식으로 변경 (CORS 문제 완전 해결)
+        // ✅ 기존 성공한 FormData 방식 + 지역 데이터 추가
         const formData = new FormData();
+        formData.append('region', region);  // 지역 데이터 추가
         formData.append('name', name);
         formData.append('phone', phone);
         formData.append('consent', consent ? 'true' : 'false');
-    
+        
+        // 🔒 보안 토큰 적용 시 주석 해제
+        // formData.append('token', 'baegi-track-b-security-2024');
+
         await fetch(SCRIPT_URL, {
           method: 'POST',
-          body: formData,      // JSON 대신 FormData 사용
-          mode: 'no-cors'      // headers 제거
+          body: formData,
+          mode: 'no-cors'
         });
-    
+
         showSuccessScreen();
-    
+
       } catch (error) {
         console.error('제출 오류:', error);
         showError('접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
@@ -351,13 +454,13 @@
         submitBtn.textContent = '접수하기';
       }
     });
-    
+
     function showError(message) {
       const errorMessage = document.getElementById('errorMessage');
       errorMessage.textContent = message;
       errorMessage.style.display = 'block';
     }
-    
+
     function showSuccessScreen() {
       document.getElementById('formScreen').style.display = 'none';
       document.getElementById('successScreen').style.display = 'block';
@@ -365,4 +468,3 @@
   </script>
 </body>
 </html>
- 
